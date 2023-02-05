@@ -1,11 +1,11 @@
 import sqlite3
 
-from flask import Flask, request, g, render_template, send_file
+from flask import Flask, request, g, render_template, send_file,url_for,redirect
 
-DATABASE = '/var/www/html/flaskapp/example.db'
+DATABASE = 'example.db'
 
-app = Flask(_name_)
-app.config.from_object(_name_)
+app = Flask(__name__)
+app.config.from_object(__name__)
 
 def connect_to_database():
     return sqlite3.connect(app.config['DATABASE'])
@@ -33,9 +33,8 @@ def commit():
 
 @app.route("/")
 def hello():
-        execute_query("DROP TABLE IF EXISTS users")
-        execute_query("CREATE TABLE users (Username text,Password text,firstname text, lastname text, email text, count integer)")
-        return render_template('index.html')
+    return redirect(url_for('login'))
+
 
 @app.route('/login', methods =['POST', 'GET'])
 def login():
@@ -51,7 +50,7 @@ def login():
             message = 'Invalid Credentials !'
     elif request.method == 'POST':
         message = 'Please enter Credentials'
-    return render_template('index.html', message = message)
+    return render_template('Login.html', message = message)
 
 @app.route('/registration', methods =['GET', 'POST'])
 def registration():
@@ -82,6 +81,7 @@ def registration():
     elif request.method == 'POST':
         message = 'Some of the fields are missing!'
     return render_template('registration.html', message = message)
+
 @app.route("/download")
 def download():
     path = "Limerick.txt"
@@ -95,5 +95,5 @@ def getNumberOfWords(file):
 def responsePage(firstname, lastname, email, count):
     return """ First Name :  """ + str(firstname) + """ <br> Last Name : """ + str(lastname) + """ <br> Email : """ + str(email) + """ <br> Word Count : """ + str(count) + """ <br><br> <a href="/download" >Download</a> """
 
-if _name_ == '_main_':
+if __name__ == '__main__':
   app.run()
