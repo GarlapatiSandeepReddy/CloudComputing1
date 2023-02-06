@@ -2,7 +2,7 @@ import sqlite3
 
 from flask import Flask, request, g, render_template, send_file,url_for,redirect
 
-DATABASE = 'example.db'
+DATABASE = 'persDetails.db'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -47,9 +47,9 @@ def login():
             for row in result:
                 return responsePage(row[0], row[1], row[2], row[3])
         else:
-            message = 'Invalid Credentials !'
+            message = 'Invalid Credentials. Please enter valid Credentials !'
     elif request.method == 'POST':
-        message = 'Please enter Credentials'
+        message = 'Enter Credentials'
     return render_template('Login.html', message = message)
 
 @app.route('/registration', methods =['GET', 'POST'])
@@ -62,15 +62,11 @@ def registration():
         lastname = str(request.form['lastname'])
         email = str(request.form['email'])
         uploaded_file = request.files['textfile']
-        if not uploaded_file:
-            filename = null
-            word_count = null
-        else :
-            filename = uploaded_file.filename
-            word_count = getNumberOfWords(uploaded_file)
+        filename = uploaded_file.filename
+        word_count = getNumberOfWords(uploaded_file)
         result = execute_query("""SELECT *  FROM users WHERE Username  = (?)""", (username, ))
         if result:
-            message = 'User has already registered!'
+            message = 'User is already registered!'
         else:
             result1 = execute_query("""INSERT INTO users (username, password, firstname, lastname, email, count) values (?, ?, ?, ?, ?, ? )""", (username, password, firstname, lastname, email, word_count, ))
             commit()
@@ -79,7 +75,7 @@ def registration():
                 for row in result2:
                     return responsePage(row[0], row[1], row[2], row[3])
     elif request.method == 'POST':
-        message = 'Some of the fields are missing!'
+        message = 'Some of the values are missing!'
     return render_template('registration.html', message = message)
 
 @app.route("/download")
